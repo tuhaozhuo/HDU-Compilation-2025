@@ -6,12 +6,12 @@
 
 ## 目录结构
 
-HDU-Compilation-2025/
-├── lab1/       # 编译器基础实验
-├── lab2/       # 词法分析器设计与实现
-├── lab3/       # 尚未完成
-├── lab4/       # 尚未完成    
-└── README.md
+HDU-Compilation-2025
+├── README.md
+├── lab1
+├── lab2
+├── lab3
+└── lab4
 ---
 
 ## 实验内容简介
