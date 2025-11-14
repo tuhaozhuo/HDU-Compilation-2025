@@ -36,6 +36,7 @@ cd ./Compilation
 ```
 3.	编译 C++ 源码：
 ```bash
+# 以 lab2 为例
 clang -std=c++17 lab2/nfa_to_dfa.cpp -o nfa_to_dfa
 ./nfa_to_dfa
 ```
