@@ -2,6 +2,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+*.dSYM/
 
 # 缓存文件
 __MACOSX/
