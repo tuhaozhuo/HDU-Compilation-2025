@@ -14,7 +14,7 @@ struct Grammar {
       prod; // 产生式映射：A -> { [α1], [α2] ... }
 };
 
-// 工具：打印文法
+// 打印文法
 void printGrammar(const Grammar &G) {
   for (auto &A : G.nonterminals) {
     cout << A << " -> ";
@@ -144,10 +144,6 @@ int main() {
     if (!getline(cin, A)) {
       cerr << "读取非终结符名称失败，程序退出。\n";
       return 1;
-    }
-    if (A.empty()) {
-      --i;
-      continue;
     }
     G.nonterminals.push_back(A);
 

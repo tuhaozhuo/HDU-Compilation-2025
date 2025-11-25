@@ -156,7 +156,6 @@ void printGrammar(Grammar &G) {
 int main() {
   Grammar G;
 
-  cout << "交互式文法输入。\n";
   cout << "请输入非终结符数量： ";
   int n;
   if (!(cin >> n)) {
@@ -167,15 +166,11 @@ int main() {
   getline(cin, line); // consume endline
 
   for (int i = 0; i < n; ++i) {
-    cout << "非终结符名称： ";
+    cout << "请输入第" << i + 1 << "个非终结符名称：";
     string A;
     if (!getline(cin, A)) {
       cerr << "读取非终结符名称失败。\n";
       return 1;
-    }
-    if (A.empty()) {
-      --i;
-      continue;
     }
 
     cout << "请输入 " << A << " 的产生式数量： ";
@@ -184,11 +179,11 @@ int main() {
       cerr << "输入数量无效。\n";
       return 1;
     }
-    getline(cin, line); // consume endline
+    getline(cin, line);
 
     for (int j = 0; j < m; ++j) {
-      cout << "产生式 " << j + 1
-           << "（符号以空格分隔，使用 ε 表示空产生式）： ";
+      cout << "请输入第" << j + 1
+           << "个产生式（符号以空格分隔，使用 EPS 或 ε 表示空产生式）：";
       if (!getline(cin, line)) {
         cerr << "读取产生式失败。\n";
         return 1;

@@ -1,0 +1,7 @@
+// 全局变量和常量声明
+int globalVar;
+const int globalConst = 10;
+
+int main() {
+    return 0;
+}

@@ -1,0 +1,6 @@
+// 复杂表达式
+int main() {
+    int a = 10, b = 20;
+    int result = (a + b) * 2 - (a * 3);
+    return result;
+}

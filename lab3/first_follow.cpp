@@ -109,9 +109,6 @@ map<string, set<string>> computeFOLLOW(const Grammar &G,
 
 int main() {
   Grammar G;
-
-  // 交互式输入文法（与 left_factoring 输入格式保持一致）
-  cout << "交互式文法输入。\n";
   cout << "请输入非终结符数量：";
   int n;
   if (!(cin >> n)) {
@@ -129,10 +126,6 @@ int main() {
       cerr << "读取非终结符名称失败，程序退出。\n";
       return 1;
     }
-    if (A.empty()) {
-      --i; // 允许用户回车重输
-      continue;
-    }
     G.nonterminals.push_back(A);
 
     cout << "请输入非终结符 " << A << " 的产生式数量：";
@@ -141,7 +134,7 @@ int main() {
       cerr << "输入无效，程序退出。\n";
       return 1;
     }
-    getline(cin, line); // 吃掉行尾
+    getline(cin, line);
 
     for (int j = 0; j < m; ++j) {
       cout << "请输入第" << j + 1
