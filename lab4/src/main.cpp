@@ -1,16 +1,19 @@
+#include "AST.hpp"
 #include <iostream>
 #include <memory>
-#include <string>
 
-int yyparse(std::unique_ptr<std::string> &ast);
+using namespace std;
+
+int yyparse(unique_ptr<BaseAST> &ast);
 
 int main() {
-  std::unique_ptr<std::string> ast;
+  unique_ptr<BaseAST> ast;
 
   if (yyparse(ast) == 0) {
-    std::cout << "AST: " << *ast << std::endl;
+    ast->Dump();
+    cout << endl;
   } else {
-    std::cout << "Parse failed." << std::endl;
+    cout << "Parse failed." << endl;
   }
   return 0;
 }

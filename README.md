@@ -43,7 +43,14 @@ cd ./Compilation
 ```
 3.	编译 C++ 源码：
 ```bash
-# 以 lab2 为例
-clang -std=c++17 lab2/nfa_to_dfa.cpp -o nfa_to_dfa
+# 以 lab2 为例（适用于lab1、lab2、lab3）
+cd ./lab2
+clang -std=c++17 nfa_to_dfa.cpp -o nfa_to_dfa
 ./nfa_to_dfa
+```
+```bash
+# 对于 lab4 我编写了makefile可以一键编译。测试文件可替换
+cd ./lab4
+make
+./compiler < test/01.sy 
 ```

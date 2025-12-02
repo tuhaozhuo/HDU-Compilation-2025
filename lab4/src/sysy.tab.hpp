@@ -49,8 +49,9 @@ extern int yydebug;
 
   #include <memory>
   #include <string>
+  #include "AST.hpp"
 
-#line 54 "src/sysy.tab.hpp"
+#line 55 "src/sysy.tab.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -64,7 +65,10 @@ extern int yydebug;
     INT = 258,                     /* INT  */
     RETURN = 259,                  /* RETURN  */
     IDENT = 260,                   /* IDENT  */
-    INT_CONST = 261                /* INT_CONST  */
+    INT_CONST = 261,               /* INT_CONST  */
+    PLUS = 262,                    /* PLUS  */
+    MINUS = 263,                   /* MINUS  */
+    NOT = 264                      /* NOT  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -73,12 +77,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 30 "src/sysy.y"
+#line 32 "src/sysy.y"
 
   std::string *str_val;
   int int_val;
+  BaseAST *ast_val;
 
-#line 82 "src/sysy.tab.hpp"
+#line 87 "src/sysy.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -90,7 +95,7 @@ typedef union YYSTYPE YYSTYPE;
 extern YYSTYPE yylval;
 
 
-int yyparse (std::unique_ptr<std::string> &ast);
+int yyparse (std::unique_ptr<BaseAST> &ast);
 
 
 #endif /* !YY_YY_SRC_SYSY_TAB_HPP_INCLUDED  */

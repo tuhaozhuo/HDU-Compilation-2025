@@ -17,9 +17,11 @@ for file in "$SOURCE_DIR"/*.sy; do
         # 获取不带扩展名的文件名
         base_name="${filename%.*}"
         
-        # 编译文件
+        # 编译文件（clang）
         clang -x c -std=c99 -Wall -Wextra -o "$OUTPUT_DIR/$base_name" "$file"
-        
+        # 编译文件（compiler）
+        # ./compiler < "$file"
+
         # 检查编译是否成功
         if [ $? -eq 0 ]; then
             echo "编译成功: $file -> $OUTPUT_DIR/$base_name"
