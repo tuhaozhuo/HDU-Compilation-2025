@@ -62,13 +62,27 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    INT = 258,                     /* INT  */
-    RETURN = 259,                  /* RETURN  */
-    IDENT = 260,                   /* IDENT  */
-    INT_CONST = 261,               /* INT_CONST  */
-    PLUS = 262,                    /* PLUS  */
-    MINUS = 263,                   /* MINUS  */
-    NOT = 264                      /* NOT  */
+    CONST = 258,                   /* CONST  */
+    VOID = 259,                    /* VOID  */
+    INT = 260,                     /* INT  */
+    FLOAT = 261,                   /* FLOAT  */
+    RETURN = 262,                  /* RETURN  */
+    IF = 263,                      /* IF  */
+    ELSE = 264,                    /* ELSE  */
+    WHILE = 265,                   /* WHILE  */
+    BREAK = 266,                   /* BREAK  */
+    CONTINUE = 267,                /* CONTINUE  */
+    IDENT = 268,                   /* IDENT  */
+    INT_CONST = 269,               /* INT_CONST  */
+    FLOAT_CONST = 270,             /* FLOAT_CONST  */
+    AND = 271,                     /* AND  */
+    OR = 272,                      /* OR  */
+    EQ = 273,                      /* EQ  */
+    NE = 274,                      /* NE  */
+    LE = 275,                      /* LE  */
+    GE = 276,                      /* GE  */
+    UPLUS = 277,                   /* UPLUS  */
+    UMINUS = 278                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -77,13 +91,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 32 "src/sysy.y"
+#line 36 "src/sysy.y"
 
-  std::string *str_val;
-  int int_val;
-  BaseAST *ast_val;
+  std::string *str_val;  // 标识符名等
+  int int_val;           // 整型常量
+  float float_val;       // 浮点常量
+  BaseAST *ast_val;      // AST 结点
 
-#line 87 "src/sysy.tab.hpp"
+#line 102 "src/sysy.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;

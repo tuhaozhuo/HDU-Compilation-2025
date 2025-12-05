@@ -1,51 +1,116 @@
 %option noyywrap
 %option nounput
 %option noinput
+%option yylineno
 
 %{
 
 #include <cstdlib>
 #include <string>
 
-// 因为 Flex 会用到 Bison 中关于 token 的定义
-// 所以需要 include Bison 生成的头文件
 #include "sysy.tab.hpp"
 
 using namespace std;
 
 %}
 
-/* 空白符和注释 */
-WhiteSpace    [ \t\n\r]+
-LineComment   "//".*
+/* --------- 模式定义（Definitions） --------- */
 
-/* 标识符 */
-Identifier    [a-zA-Z_][a-zA-Z0-9_]*
+WhiteSpace      [ \t\r\n]+
+LineComment     "//".*
 
-/* 整数字面量 */
-Decimal       [1-9][0-9]*
-Octal         0[0-7]*
-Hexadecimal   0[xX][0-9a-fA-F]+
+Identifier      [a-zA-Z_][a-zA-Z0-9_]*
+
+Decimal         [1-9][0-9]*
+Octal           0[0-7]*
+Hexadecimal     0[xX][0-9a-fA-F]+
+
+Float1          [0-9]+\.[0-9]*([eE][+-]?[0-9]+)?
+Float2          \.[0-9]+([eE][+-]?[0-9]+)?
+Float3          [0-9]+([eE][+-]?[0-9]+)
 
 %%
 
+ 
+{WhiteSpace}      { /* skip */ }
+{LineComment}     { /* skip */ }
 
-{WhiteSpace}    { /* 忽略, 不做任何操作 */ }
-{LineComment}   { /* 忽略, 不做任何操作 */ }
+ 
+"const"           { return CONST; }
+"int"             { return INT; }
+"void"            { return VOID; }
+"float"           { return FLOAT; }
+"if"              { return IF; }
+"else"            { return ELSE; }
+"while"           { return WHILE; }
+"break"           { return BREAK; }
+"continue"        { return CONTINUE; }
+"return"          { return RETURN; }
 
-"int"           { return INT; }
-"return"        { return RETURN; }
+ 
+{Identifier}      {
+                     yylval.str_val = new string(yytext);
+                     return IDENT;
+                   }
 
-{Identifier}    { yylval.str_val = new string(yytext); return IDENT; }
+ 
+{Float1}          {
+                     yylval.float_val = strtof(yytext, nullptr);
+                     return FLOAT_CONST;
+                   }
+{Float2}          {
+                     yylval.float_val = strtof(yytext, nullptr);
+                     return FLOAT_CONST;
+                   }
+{Float3}          {
+                     yylval.float_val = strtof(yytext, nullptr);
+                     return FLOAT_CONST;
+                   }
 
-{Decimal}       { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
-{Octal}         { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
-{Hexadecimal}   { yylval.int_val = strtol(yytext, nullptr, 0); return INT_CONST; }
+ 
+{Hexadecimal}     {
+                     yylval.int_val = strtol(yytext, nullptr, 0);
+                     return INT_CONST;
+                   }
+{Octal}           {
+                     yylval.int_val = strtol(yytext, nullptr, 0);
+                     return INT_CONST;
+                   }
+{Decimal}         {
+                     yylval.int_val = strtol(yytext, nullptr, 0);
+                     return INT_CONST;
+                   }
 
-"+"             { return PLUS; }
-"-"             { return MINUS; }
-"!"             { return NOT; }
+ 
+"&&"              { return AND; }
+"||"              { return OR; }
 
-.               { return yytext[0]; }
+ 
+"<="              { return LE; }
+">="              { return GE; }
+"=="              { return EQ; }
+"!="              { return NE; }
+"<"               { return '<'; }
+">"               { return '>'; }
+
+ 
+"+"               { return '+'; }
+"-"               { return '-'; }
+"*"               { return '*'; }
+"/"               { return '/'; }
+"%"               { return '%'; }
+"="               { return '='; }
+"!"               { return '!'; }
+";"               { return ';'; }
+","               { return ','; }
+"("               { return '('; }
+")"               { return ')'; }
+"{"               { return '{'; }
+"}"               { return '}'; }
+"["               { return '['; }
+"]"               { return ']'; }
+
+ 
+.                 { return yytext[0]; }
 
 %%

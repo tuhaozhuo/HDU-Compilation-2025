@@ -1,9 +1,9 @@
-// 简单函数定义和调用
-int add(int a, int b) {
-    return a + b;
-}
-
+// 局部变量和作用域
 int main() {
-    int result = add(5, 3);
-    return result;
+    int a = 10;
+    {
+        int a = 20;
+        a = a + 1;
+    }
+    return a;
 }

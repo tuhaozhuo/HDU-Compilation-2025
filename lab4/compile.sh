@@ -9,26 +9,31 @@ OUTPUT_DIR="output"
 # 创建输出文件夹（如果不存在）
 mkdir -p "$OUTPUT_DIR"
 
-# 遍历源文件夹中的所有.sy文件
+# 计数用来标记是第几个测试用例
+index=0
+
+# 遍历源文件夹中的所有.sy文件（按文件名字典序）
 for file in "$SOURCE_DIR"/*.sy; do
     if [ -f "$file" ]; then  # 确保是文件
+        index=$((index + 1))
+
         # 获取文件名（不包含路径）
         filename=$(basename "$file")
         # 获取不带扩展名的文件名
         base_name="${filename%.*}"
-        
-        # 编译文件（clang）
-        clang -x c -std=c99 -Wall -Wextra -o "$OUTPUT_DIR/$base_name" "$file"
-        # 编译文件（compiler）
-        # ./compiler < "$file"
 
-        # 检查编译是否成功
-        if [ $? -eq 0 ]; then
-            echo "编译成功: $file -> $OUTPUT_DIR/$base_name"
+        echo "=============================="
+        echo "[$index] 测试用例: $filename"
+
+        ./compiler < "$file"
+        status=$?
+
+        if [ $status -eq 0 ]; then
+            echo "结果: 测试用例 $base_name 编译成功"
         else
-            echo "编译失败: $file"
+            echo "结果: 测试用例 $base_name 编译失败 (退出码: $status)"
         fi
     fi
 done
 
-echo "所有文件编译完成。可执行文件已保存到 $OUTPUT_DIR 文件夹中。"
+echo "========== 所有测试用例运行完成 =========="

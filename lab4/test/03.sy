@@ -1,7 +1,9 @@
-// 数组声明和初始化
-const int arr[3] = {1, 2, 3};
-int arr2[2][2] = {{1, 2}, {3, 4}};
-
+// 逻辑运算
 int main() {
-    return arr[0] + arr2[1][0];
+    int a = 10, b = 20;
+    if ((a > 5) && (b < 30)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
