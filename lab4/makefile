@@ -4,7 +4,7 @@ CXX=clang++
 CXXFLAGS=-std=c++11
 
 SRC_DIR=src
-OUT=lab4
+OUT=exec
 
 LEX_SRC=$(SRC_DIR)/sysy.l
 YACC_SRC=$(SRC_DIR)/sysy.y
@@ -25,7 +25,7 @@ $(YACC_CPP): $(YACC_SRC)
 	@echo "[2/3] BISON文件生成完成"
 
 $(OUT): $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC)
-	@$(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)
+	@$(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)/lab4
 	@echo "[3/3] lab4程序编译完成"
 
 

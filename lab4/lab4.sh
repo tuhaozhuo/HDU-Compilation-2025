@@ -8,6 +8,9 @@ echo "开始编译测试用例"
 # 定义源文件夹路径
 SOURCE_DIR="test"
 
+# 定义可执行文件夹路径
+EXEC_DIR="exec"
+
 # 定义目标输出文件夹路径
 OUTPUT_DIR="output"
 
@@ -30,7 +33,7 @@ for file in "$SOURCE_DIR"/*.sy; do
         echo "=============================="
         echo "[$index] 测试用例: $filename"
 
-        ./compiler < "$file"
+        "$EXEC_DIR"/lab4 < "$file"
         status=$?
 
         if [ $status -eq 0 ]; then
