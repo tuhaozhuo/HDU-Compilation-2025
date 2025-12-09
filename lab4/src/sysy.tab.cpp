@@ -589,17 +589,17 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    77,    77,    83,    88,    96,    97,   103,   104,   108,
-     109,   113,   119,   120,   124,   128,   129,   133,   134,   138,
-     139,   143,   144,   148,   152,   158,   159,   163,   164,   168,
-     169,   173,   174,   178,   179,   183,   184,   191,   198,   208,
-     209,   213,   214,   218,   221,   227,   228,   233,   243,   244,
-     248,   253,   261,   262,   267,   273,   278,   281,   284,   290,
-     297,   303,   306,   309,   314,   321,   326,   335,   336,   341,
-     345,   349,   350,   359,   360,   369,   370,   376,   385,   386,
-     392,   398,   404,   413,   414,   420,   429,   430,   436,   442,
-     451,   452,   457,   462,   467,   479,   480,   484,   489,   497,
-     498,   499,   503,   507
+       0,    76,    76,    82,    87,    95,    96,   102,   103,   107,
+     108,   112,   118,   119,   123,   127,   128,   132,   133,   137,
+     138,   142,   143,   147,   151,   157,   158,   162,   163,   167,
+     168,   172,   173,   177,   178,   182,   183,   190,   197,   207,
+     208,   212,   213,   217,   220,   226,   227,   232,   242,   243,
+     247,   252,   260,   261,   266,   272,   277,   280,   283,   289,
+     296,   302,   305,   308,   313,   320,   325,   334,   335,   340,
+     344,   348,   349,   358,   359,   368,   369,   375,   384,   385,
+     391,   397,   403,   412,   413,   419,   428,   429,   435,   441,
+     450,   451,   456,   461,   466,   478,   479,   483,   488,   496,
+     497,   498,   502,   506
 };
 #endif
 
@@ -1558,7 +1558,7 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* CompUnit: CompUnitItems  */
-#line 77 "src/sysy.y"
+#line 76 "src/sysy.y"
                   {
       ast = std::unique_ptr<BaseAST>((yyvsp[0].ast_val));
     }
@@ -1566,7 +1566,7 @@ yyreduce:
     break;
 
   case 3: /* CompUnitItems: CompUnitItem  */
-#line 83 "src/sysy.y"
+#line 82 "src/sysy.y"
                  {
       auto node = new NodeAST("CompUnit");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -1576,7 +1576,7 @@ yyreduce:
     break;
 
   case 4: /* CompUnitItems: CompUnitItems CompUnitItem  */
-#line 88 "src/sysy.y"
+#line 87 "src/sysy.y"
                                {
       auto node = static_cast<NodeAST *>((yyvsp[-1].ast_val));
       node->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -1586,31 +1586,31 @@ yyreduce:
     break;
 
   case 5: /* CompUnitItem: Decl  */
-#line 96 "src/sysy.y"
+#line 95 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1592 "src/sysy.tab.cpp"
     break;
 
   case 6: /* CompUnitItem: FuncDef  */
-#line 97 "src/sysy.y"
+#line 96 "src/sysy.y"
             { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1598 "src/sysy.tab.cpp"
     break;
 
   case 9: /* Decl: ConstDecl  */
-#line 108 "src/sysy.y"
+#line 107 "src/sysy.y"
               { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1604 "src/sysy.tab.cpp"
     break;
 
   case 10: /* Decl: VarDecl  */
-#line 109 "src/sysy.y"
+#line 108 "src/sysy.y"
               { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1610 "src/sysy.tab.cpp"
     break;
 
   case 11: /* ConstDecl: CONST BType ConstDefList ';'  */
-#line 113 "src/sysy.y"
+#line 112 "src/sysy.y"
                                  {
       (yyval.ast_val) = new NodeAST("ConstDecl");
     }
@@ -1618,7 +1618,7 @@ yyreduce:
     break;
 
   case 24: /* VarDecl: BType VarDefList ';'  */
-#line 152 "src/sysy.y"
+#line 151 "src/sysy.y"
                          {
       (yyval.ast_val) = new NodeAST("VarDecl");
     }
@@ -1626,7 +1626,7 @@ yyreduce:
     break;
 
   case 37: /* FuncDef: VOID IDENT '(' FuncFParamsOpt ')' Block  */
-#line 191 "src/sysy.y"
+#line 190 "src/sysy.y"
                                             {
       std::string name = *(yyvsp[-4].str_val);
       delete (yyvsp[-4].str_val);
@@ -1638,7 +1638,7 @@ yyreduce:
     break;
 
   case 38: /* FuncDef: BType IDENT '(' FuncFParamsOpt ')' Block  */
-#line 198 "src/sysy.y"
+#line 197 "src/sysy.y"
                                              {
       std::string name = *(yyvsp[-4].str_val);
       delete (yyvsp[-4].str_val);
@@ -1650,7 +1650,7 @@ yyreduce:
     break;
 
   case 43: /* FuncFParam: BType IDENT  */
-#line 218 "src/sysy.y"
+#line 217 "src/sysy.y"
                 {
       // 标量形参，当前不单独在 AST 中展示
     }
@@ -1658,7 +1658,7 @@ yyreduce:
     break;
 
   case 44: /* FuncFParam: BType IDENT FuncFParamArrayDims  */
-#line 221 "src/sysy.y"
+#line 220 "src/sysy.y"
                                     {
       // 数组形参，同样暂不在 AST 中细化维度信息
     }
@@ -1666,7 +1666,7 @@ yyreduce:
     break;
 
   case 47: /* Block: '{' BlockItemsOpt '}'  */
-#line 233 "src/sysy.y"
+#line 232 "src/sysy.y"
                           {
       auto node = new NodeAST("Block");
       if ((yyvsp[-1].ast_val)) {
@@ -1678,19 +1678,19 @@ yyreduce:
     break;
 
   case 48: /* BlockItemsOpt: %empty  */
-#line 243 "src/sysy.y"
+#line 242 "src/sysy.y"
                 { (yyval.ast_val) = nullptr; }
 #line 1684 "src/sysy.tab.cpp"
     break;
 
   case 49: /* BlockItemsOpt: BlockItems  */
-#line 244 "src/sysy.y"
+#line 243 "src/sysy.y"
                 { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1690 "src/sysy.tab.cpp"
     break;
 
   case 50: /* BlockItems: BlockItem  */
-#line 248 "src/sysy.y"
+#line 247 "src/sysy.y"
               {
       auto list = new NodeAST("BlockItems");
       list->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -1700,7 +1700,7 @@ yyreduce:
     break;
 
   case 51: /* BlockItems: BlockItems BlockItem  */
-#line 253 "src/sysy.y"
+#line 252 "src/sysy.y"
                          {
       auto list = static_cast<NodeAST *>((yyvsp[-1].ast_val));
       list->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -1710,19 +1710,19 @@ yyreduce:
     break;
 
   case 52: /* BlockItem: Decl  */
-#line 261 "src/sysy.y"
+#line 260 "src/sysy.y"
          { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1716 "src/sysy.tab.cpp"
     break;
 
   case 53: /* BlockItem: Stmt  */
-#line 262 "src/sysy.y"
+#line 261 "src/sysy.y"
          { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1722 "src/sysy.tab.cpp"
     break;
 
   case 54: /* Stmt: LVal '=' Exp ';'  */
-#line 267 "src/sysy.y"
+#line 266 "src/sysy.y"
                      {
       auto node = new NodeAST("Assign");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-3].ast_val)));
@@ -1733,7 +1733,7 @@ yyreduce:
     break;
 
   case 55: /* Stmt: Exp ';'  */
-#line 273 "src/sysy.y"
+#line 272 "src/sysy.y"
             {
       auto node = new NodeAST("ExprStmt");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-1].ast_val)));
@@ -1743,7 +1743,7 @@ yyreduce:
     break;
 
   case 56: /* Stmt: ';'  */
-#line 278 "src/sysy.y"
+#line 277 "src/sysy.y"
         {
       (yyval.ast_val) = new NodeAST("EmptyStmt");
     }
@@ -1751,7 +1751,7 @@ yyreduce:
     break;
 
   case 57: /* Stmt: Block  */
-#line 281 "src/sysy.y"
+#line 280 "src/sysy.y"
           {
       (yyval.ast_val) = (yyvsp[0].ast_val);
     }
@@ -1759,7 +1759,7 @@ yyreduce:
     break;
 
   case 58: /* Stmt: IF '(' Cond ')' Stmt  */
-#line 284 "src/sysy.y"
+#line 283 "src/sysy.y"
                          {
       auto node = new NodeAST("If");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val))); // 条件
@@ -1770,7 +1770,7 @@ yyreduce:
     break;
 
   case 59: /* Stmt: IF '(' Cond ')' Stmt ELSE Stmt  */
-#line 290 "src/sysy.y"
+#line 289 "src/sysy.y"
                                    {
       auto node = new NodeAST("IfElse");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-4].ast_val))); // 条件
@@ -1782,7 +1782,7 @@ yyreduce:
     break;
 
   case 60: /* Stmt: WHILE '(' Cond ')' Stmt  */
-#line 297 "src/sysy.y"
+#line 296 "src/sysy.y"
                             {
       auto node = new NodeAST("While");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val))); // 条件
@@ -1793,7 +1793,7 @@ yyreduce:
     break;
 
   case 61: /* Stmt: BREAK ';'  */
-#line 303 "src/sysy.y"
+#line 302 "src/sysy.y"
               {
       (yyval.ast_val) = new NodeAST("Break");
     }
@@ -1801,7 +1801,7 @@ yyreduce:
     break;
 
   case 62: /* Stmt: CONTINUE ';'  */
-#line 306 "src/sysy.y"
+#line 305 "src/sysy.y"
                  {
       (yyval.ast_val) = new NodeAST("Continue");
     }
@@ -1809,7 +1809,7 @@ yyreduce:
     break;
 
   case 63: /* Stmt: RETURN Exp ';'  */
-#line 309 "src/sysy.y"
+#line 308 "src/sysy.y"
                    {
       auto node = new NodeAST("Return");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-1].ast_val)));
@@ -1819,7 +1819,7 @@ yyreduce:
     break;
 
   case 64: /* Stmt: RETURN ';'  */
-#line 314 "src/sysy.y"
+#line 313 "src/sysy.y"
                {
       (yyval.ast_val) = new NodeAST("ReturnVoid");
     }
@@ -1827,7 +1827,7 @@ yyreduce:
     break;
 
   case 65: /* LVal: IDENT  */
-#line 321 "src/sysy.y"
+#line 320 "src/sysy.y"
           {
       std::string name = *(yyvsp[0].str_val);
       delete (yyvsp[0].str_val);
@@ -1837,7 +1837,7 @@ yyreduce:
     break;
 
   case 66: /* LVal: IDENT LValArrayDims  */
-#line 326 "src/sysy.y"
+#line 325 "src/sysy.y"
                         {
       std::string name = *(yyvsp[-1].str_val);
       delete (yyvsp[-1].str_val);
@@ -1848,25 +1848,25 @@ yyreduce:
     break;
 
   case 69: /* Exp: LOrExp  */
-#line 341 "src/sysy.y"
+#line 340 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1854 "src/sysy.tab.cpp"
     break;
 
   case 70: /* Cond: LOrExp  */
-#line 345 "src/sysy.y"
+#line 344 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1860 "src/sysy.tab.cpp"
     break;
 
   case 71: /* LOrExp: LAndExp  */
-#line 349 "src/sysy.y"
+#line 348 "src/sysy.y"
             { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1866 "src/sysy.tab.cpp"
     break;
 
   case 72: /* LOrExp: LOrExp OR LAndExp  */
-#line 350 "src/sysy.y"
+#line 349 "src/sysy.y"
                       {
       auto node = new NodeAST("||");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1877,13 +1877,13 @@ yyreduce:
     break;
 
   case 73: /* LAndExp: EqExp  */
-#line 359 "src/sysy.y"
+#line 358 "src/sysy.y"
           { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1883 "src/sysy.tab.cpp"
     break;
 
   case 74: /* LAndExp: LAndExp AND EqExp  */
-#line 360 "src/sysy.y"
+#line 359 "src/sysy.y"
                       {
       auto node = new NodeAST("&&");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1894,13 +1894,13 @@ yyreduce:
     break;
 
   case 75: /* EqExp: RelExp  */
-#line 369 "src/sysy.y"
+#line 368 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1900 "src/sysy.tab.cpp"
     break;
 
   case 76: /* EqExp: EqExp EQ RelExp  */
-#line 370 "src/sysy.y"
+#line 369 "src/sysy.y"
                     {
       auto node = new NodeAST("==");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1911,7 +1911,7 @@ yyreduce:
     break;
 
   case 77: /* EqExp: EqExp NE RelExp  */
-#line 376 "src/sysy.y"
+#line 375 "src/sysy.y"
                     {
       auto node = new NodeAST("!=");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1922,13 +1922,13 @@ yyreduce:
     break;
 
   case 78: /* RelExp: AddExp  */
-#line 385 "src/sysy.y"
+#line 384 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1928 "src/sysy.tab.cpp"
     break;
 
   case 79: /* RelExp: RelExp '<' AddExp  */
-#line 386 "src/sysy.y"
+#line 385 "src/sysy.y"
                       {
       auto node = new NodeAST("<");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1939,7 +1939,7 @@ yyreduce:
     break;
 
   case 80: /* RelExp: RelExp '>' AddExp  */
-#line 392 "src/sysy.y"
+#line 391 "src/sysy.y"
                       {
       auto node = new NodeAST(">");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1950,7 +1950,7 @@ yyreduce:
     break;
 
   case 81: /* RelExp: RelExp LE AddExp  */
-#line 398 "src/sysy.y"
+#line 397 "src/sysy.y"
                      {
       auto node = new NodeAST("<=");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1961,7 +1961,7 @@ yyreduce:
     break;
 
   case 82: /* RelExp: RelExp GE AddExp  */
-#line 404 "src/sysy.y"
+#line 403 "src/sysy.y"
                      {
       auto node = new NodeAST(">=");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1972,13 +1972,13 @@ yyreduce:
     break;
 
   case 83: /* AddExp: MulExp  */
-#line 413 "src/sysy.y"
+#line 412 "src/sysy.y"
            { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 1978 "src/sysy.tab.cpp"
     break;
 
   case 84: /* AddExp: AddExp '+' MulExp  */
-#line 414 "src/sysy.y"
+#line 413 "src/sysy.y"
                       {
       auto node = new NodeAST("+");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -1989,7 +1989,7 @@ yyreduce:
     break;
 
   case 85: /* AddExp: AddExp '-' MulExp  */
-#line 420 "src/sysy.y"
+#line 419 "src/sysy.y"
                       {
       auto node = new NodeAST("-");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -2000,13 +2000,13 @@ yyreduce:
     break;
 
   case 86: /* MulExp: UnaryExp  */
-#line 429 "src/sysy.y"
+#line 428 "src/sysy.y"
              { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 2006 "src/sysy.tab.cpp"
     break;
 
   case 87: /* MulExp: MulExp '*' UnaryExp  */
-#line 430 "src/sysy.y"
+#line 429 "src/sysy.y"
                         {
       auto node = new NodeAST("*");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -2017,7 +2017,7 @@ yyreduce:
     break;
 
   case 88: /* MulExp: MulExp '/' UnaryExp  */
-#line 436 "src/sysy.y"
+#line 435 "src/sysy.y"
                         {
       auto node = new NodeAST("/");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -2028,7 +2028,7 @@ yyreduce:
     break;
 
   case 89: /* MulExp: MulExp '%' UnaryExp  */
-#line 442 "src/sysy.y"
+#line 441 "src/sysy.y"
                         {
       auto node = new NodeAST("%");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[-2].ast_val)));
@@ -2039,13 +2039,13 @@ yyreduce:
     break;
 
   case 90: /* UnaryExp: PrimaryExp  */
-#line 451 "src/sysy.y"
+#line 450 "src/sysy.y"
                { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 2045 "src/sysy.tab.cpp"
     break;
 
   case 91: /* UnaryExp: '+' UnaryExp  */
-#line 452 "src/sysy.y"
+#line 451 "src/sysy.y"
                              {
       auto node = new NodeAST("unary+");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -2055,7 +2055,7 @@ yyreduce:
     break;
 
   case 92: /* UnaryExp: '-' UnaryExp  */
-#line 457 "src/sysy.y"
+#line 456 "src/sysy.y"
                               {
       auto node = new NodeAST("unary-");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -2065,7 +2065,7 @@ yyreduce:
     break;
 
   case 93: /* UnaryExp: '!' UnaryExp  */
-#line 462 "src/sysy.y"
+#line 461 "src/sysy.y"
                  {
       auto node = new NodeAST("!");
       node->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -2075,7 +2075,7 @@ yyreduce:
     break;
 
   case 94: /* UnaryExp: IDENT '(' FuncRParamsOpt ')'  */
-#line 467 "src/sysy.y"
+#line 466 "src/sysy.y"
                                  {
       std::string name = *(yyvsp[-3].str_val);
       delete (yyvsp[-3].str_val);
@@ -2089,19 +2089,19 @@ yyreduce:
     break;
 
   case 95: /* FuncRParamsOpt: %empty  */
-#line 479 "src/sysy.y"
+#line 478 "src/sysy.y"
                 { (yyval.ast_val) = nullptr; }
 #line 2095 "src/sysy.tab.cpp"
     break;
 
   case 96: /* FuncRParamsOpt: FuncRParams  */
-#line 480 "src/sysy.y"
+#line 479 "src/sysy.y"
                  { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 2101 "src/sysy.tab.cpp"
     break;
 
   case 97: /* FuncRParams: Exp  */
-#line 484 "src/sysy.y"
+#line 483 "src/sysy.y"
         {
       auto list = new NodeAST("Args");
       list->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -2111,7 +2111,7 @@ yyreduce:
     break;
 
   case 98: /* FuncRParams: FuncRParams ',' Exp  */
-#line 489 "src/sysy.y"
+#line 488 "src/sysy.y"
                         {
       auto list = static_cast<NodeAST *>((yyvsp[-2].ast_val));
       list->Add(std::unique_ptr<BaseAST>((yyvsp[0].ast_val)));
@@ -2121,25 +2121,25 @@ yyreduce:
     break;
 
   case 99: /* PrimaryExp: '(' Exp ')'  */
-#line 497 "src/sysy.y"
+#line 496 "src/sysy.y"
                 { (yyval.ast_val) = (yyvsp[-1].ast_val); }
 #line 2127 "src/sysy.tab.cpp"
     break;
 
   case 100: /* PrimaryExp: LVal  */
-#line 498 "src/sysy.y"
+#line 497 "src/sysy.y"
                 { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 2133 "src/sysy.tab.cpp"
     break;
 
   case 101: /* PrimaryExp: Number  */
-#line 499 "src/sysy.y"
+#line 498 "src/sysy.y"
                 { (yyval.ast_val) = (yyvsp[0].ast_val); }
 #line 2139 "src/sysy.tab.cpp"
     break;
 
   case 102: /* Number: INT_CONST  */
-#line 503 "src/sysy.y"
+#line 502 "src/sysy.y"
               {
       auto node = new NodeAST("IntConst(" + std::to_string((yyvsp[0].int_val)) + ")");
       (yyval.ast_val) = node;
@@ -2148,7 +2148,7 @@ yyreduce:
     break;
 
   case 103: /* Number: FLOAT_CONST  */
-#line 507 "src/sysy.y"
+#line 506 "src/sysy.y"
                 {
       auto node = new NodeAST("FloatConst");
       (yyval.ast_val) = node;
@@ -2381,7 +2381,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 513 "src/sysy.y"
+#line 512 "src/sysy.y"
 
 
 // =================== 错误处理 ===================

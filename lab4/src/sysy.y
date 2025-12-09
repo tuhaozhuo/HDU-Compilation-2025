@@ -28,8 +28,7 @@ using namespace std;
 // 通过该参数把最终构建好的 AST 根结点传回 main 函数
 %parse-param { std::unique_ptr<BaseAST> &ast }
 
-// 让 Bison 生成更详细的错误信息，例如
-// "syntax error, unexpected '+', expecting ';' or ')'" 等
+// 让 Bison 生成更详细的错误信息
 %define parse.error verbose
 
 // yylval 的联合体定义：用于在词法/语法之间传递信息

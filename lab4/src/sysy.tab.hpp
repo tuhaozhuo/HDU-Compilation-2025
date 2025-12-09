@@ -91,7 +91,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 36 "src/sysy.y"
+#line 35 "src/sysy.y"
 
   std::string *str_val;  // 标识符名等
   int int_val;           // 整型常量

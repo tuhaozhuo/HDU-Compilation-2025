@@ -1,9 +1,9 @@
-// 局部变量和作用域
+// 逻辑运算
 int main() {
-    int a = 10;
-    {
-        int a = 20;
-        a = a + 1;
+    int a = 10, b = 20;
+    if ((a > 5) && (b < 30)) {
+        return 1;
+    } else {
+        return 0;
     }
-    return a;
 }

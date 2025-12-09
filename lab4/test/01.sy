@@ -1,18 +1,9 @@
-// 多维数组和函数参数
-void printArray(int arr[2][2]) {
-    int i = 0;
-    while (i < 2) {
-        int j = 0;
-        while (j < 2) {
-            arr[i][j] = arr[i][j] + 1;
-            j = j + 1;
-        }
-        i = i + 1;
-    }
-}
-
+// 局部变量和作用域
 int main() {
-    int arr[2][2] = {{1, 2}, {3, 4}};
-    printArray(arr);
-    return arr[1][1];
+    int a = 10;
+    {
+        int a = 20;
+        a = a + 1;
+    }
+    return a;
 }

@@ -4,7 +4,7 @@ CXX=clang++
 CXXFLAGS=-std=c++11
 
 SRC_DIR=src
-OUT=compiler
+OUT=lab4
 
 LEX_SRC=$(SRC_DIR)/sysy.l
 YACC_SRC=$(SRC_DIR)/sysy.y
@@ -26,7 +26,7 @@ $(YACC_CPP): $(YACC_SRC)
 
 $(OUT): $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC)
 	@$(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)
-	@echo "[3/3] compiler程序编译完成"
+	@echo "[3/3] lab4程序编译完成"
 
 
 .PHONY: all

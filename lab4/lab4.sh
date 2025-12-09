@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "开始编译源代码"
+make
+
+echo "开始编译测试用例"
+
 # 定义源文件夹路径
 SOURCE_DIR="test"
 
@@ -12,7 +17,7 @@ mkdir -p "$OUTPUT_DIR"
 # 计数用来标记是第几个测试用例
 index=0
 
-# 遍历源文件夹中的所有.sy文件（按文件名字典序）
+# 遍历源文件夹中的所有.sy文件
 for file in "$SOURCE_DIR"/*.sy; do
     if [ -f "$file" ]; then  # 确保是文件
         index=$((index + 1))

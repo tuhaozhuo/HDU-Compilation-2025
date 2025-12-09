@@ -37,25 +37,22 @@
 ```bash
 git clone git@github.com:tuhaozhuo/HDU-Compilation-2025.git
 ```
-2.	进入实验目录，按各自实验注释执行代码
+2.	进入实验目录
 ```
 cd ./Compilation
 ```
 3.	编译 C++ 源码：
 ```bash
-# 以 lab2 为例（适用于lab1、lab2、lab3）
-cd ./lab2
-clang -std=c++17 nfa_to_dfa.cpp -o nfa_to_dfa
-./nfa_to_dfa
-```
+# 我为每个实验都编写了 makefile 或 sh脚本，只需要执行以下命令即可
 
-```bash
-# 对于 lab4 我编写了makefile可以一键编译。测试文件可替换
-cd ./lab4
+# lab2
+cd ./lab2
+./lab2.sh
+
+# lab3
+cd ./lab3
 make
 
-# 可以选择测试单一测试用例
-./compiler < test/01.sy  
-# 也可以使用脚本测试全部测试用例
-./compile.sh
+# lab4
+./lab4.sh
 ```
