@@ -54,5 +54,6 @@ cd ./lab3
 make
 
 # lab4
+cd ./lab4
 ./lab4.sh
 ```
