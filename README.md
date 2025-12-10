@@ -7,7 +7,7 @@
 - macOS: 14.8
 - clang: 16.0.0
 
-注意：exec可执行文件仅适用于macOS环境。在其他环境运行时，请使用GCC等编译器自行编译。
+注意：exec可执行文件仅适用于macOS环境。在其他环境运行时，请使用GCC、Clang等编译器自行编译。
 
 ## 实验内容简介
 
@@ -43,7 +43,7 @@ cd ./Compilation
 ```
 3.	编译 C++ 源码：
 ```bash
-# 我为每个实验都编写了 makefile 或 sh脚本，只需要执行以下命令即可
+# 我为每个实验都编写了 makefile 或 sh 脚本，只需要执行以下命令即可
 
 # lab2
 cd ./lab2
@@ -54,6 +54,6 @@ cd ./lab3
 make
 
 # lab4
-cd ./lab4
+cd ./lab4  # 需要makefile中切换成本地FLEX、BISON路径
 ./lab4.sh
 ```
