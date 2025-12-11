@@ -29,7 +29,7 @@ $(OUT): $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC)
 	@echo "[3/3] lab4程序编译完成"
 
 only:
-    @if [ -f $(LEX_CPP) ] && [ -f $(YACC_CPP) ] && [ -f $(MAIN_SRC) ]; then \
+	@if [ -f $(LEX_CPP) ] && [ -f $(YACC_CPP) ] && [ -f $(MAIN_SRC) ]; then \
         $(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)/lab4; \
         echo "[1/1] lab4程序编译完成"; \
     else \
