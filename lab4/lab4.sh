@@ -1,15 +1,12 @@
 #!/bin/bash
 
-echo "开始编译源代码"
-make
-
 echo "开始编译测试用例"
 
 # 定义源文件夹路径
 SOURCE_DIR="test"
 
 # 定义可执行文件夹路径
-EXEC_DIR="exec"
+EXE_DIR="exe"
 
 # 定义目标输出文件夹路径
 OUTPUT_DIR="output"
@@ -33,7 +30,7 @@ for file in "$SOURCE_DIR"/*.sy; do
         echo "=============================="
         echo "[$index] 测试用例: $filename"
 
-        "$EXEC_DIR"/lab4 < "$file"
+        "$EXE_DIR"/lab4 < "$file"
         status=$?
 
         if [ $status -eq 0 ]; then

@@ -1,10 +1,10 @@
 FLEX=/opt/homebrew/opt/flex/bin/flex
 BISON=/opt/homebrew/opt/bison/bin/bison
-CXX=clang++
+CXX=g++
 CXXFLAGS=-std=c++11
 
 SRC_DIR=src
-OUT=exec
+OUT=exe
 
 LEX_SRC=$(SRC_DIR)/sysy.l
 YACC_SRC=$(SRC_DIR)/sysy.y
@@ -28,5 +28,15 @@ $(OUT): $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC)
 	@$(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)/lab4
 	@echo "[3/3] lab4程序编译完成"
 
+only:
+    @if [ -f $(LEX_CPP) ] && [ -f $(YACC_CPP) ] && [ -f $(MAIN_SRC) ]; then \
+        $(CXX) $(CXXFLAGS) $(LEX_CPP) $(YACC_CPP) $(MAIN_SRC) -o $(OUT)/lab4; \
+        echo "[1/1] lab4程序编译完成"; \
+    else \
+        echo "Error: Required files ($(LEX_CPP), $(YACC_CPP), $(MAIN_SRC)) not found. Run 'make' first."; \
+    fi
 
-.PHONY: all
+clean:
+	rm -rf $(LEX_CPP) $(YACC_CPP) $(YACC_HPP)
+
+.PHONY: all only clean

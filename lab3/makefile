@@ -1,7 +1,7 @@
 CXX = clang++
 CXXFLAGS = -std=c++11 -Iinclude  # 假设有include目录，添加其他必要flags
 SRC_DIR = src
-EXEC_DIR = exec
+EXEC_DIR = exe
 
 # 查找src目录下的所有.cpp文件
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)

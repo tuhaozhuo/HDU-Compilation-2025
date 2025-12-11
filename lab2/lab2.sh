@@ -2,7 +2,7 @@
 
 # 编译源代码
 echo "开始编译源代码"
-clang++ -std=c++11 src/dfa_minimize.cpp -o exec/lab2
+clang++ -std=c++11 src/dfa_minimize.cpp -o exe/lab2
 
 echo "开始可视化"
 
