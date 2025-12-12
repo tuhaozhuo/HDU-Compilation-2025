@@ -46,6 +46,9 @@ using namespace std;
 %token <float_val> FLOAT_CONST
 %token AND OR EQ NE LE GE
 
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
+
 // ---------- 非终结符类型 ----------
 %type <ast_val> CompUnit
 %type <ast_val> CompUnitItems CompUnitItem
@@ -280,7 +283,7 @@ Stmt
   | Block {
       $$ = $1;
     }
-  | IF '(' Cond ')' Stmt {
+  | IF '(' Cond ')' Stmt %prec LOWER_THAN_ELSE {
       auto node = new NodeAST("If");
       node->Add(std::unique_ptr<BaseAST>($3)); // 条件
       node->Add(std::unique_ptr<BaseAST>($5)); // then

@@ -68,9 +68,7 @@ Lab 4: 编译器开发与实现
 │   └── src           # 源代码
 └── lab4
     ├── exe           # 可执行文件
-    ├── lab4.sh       # 测试脚本
     ├── makefile      # 编译脚本
-    ├── output        # 测试用例输出
     ├── src           # 源代码
     └── test          # 测试用例
 ```
@@ -100,12 +98,11 @@ make  # 编译语法分析器
 cd lab4
 make       # 生成 Flex/Bison 文件并编译
 # 或 make only  # 仅编译（若已生成中间文件）
-
-./lab4.sh  # 运行测试脚本，遍历 test/ 目录中的用例
+make test  # 运行测试脚本，遍历 test/ 目录中的用例
 ```
 3. 测试
 各实验的`test/`目录包含测试用例。
-运行`./lab4.sh`可自动测试 Lab 4 的编译器前端。
+运行`make test`可自动测试 Lab 4 的编译器前端。
 
 ## 常见问题
 - 编译错误: 确保 Flex 和 Bison 已正确安装，并使用 make clean 清理后重新编译。

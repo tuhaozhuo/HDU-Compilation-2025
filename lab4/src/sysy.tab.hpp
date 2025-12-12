@@ -81,8 +81,9 @@ extern int yydebug;
     NE = 274,                      /* NE  */
     LE = 275,                      /* LE  */
     GE = 276,                      /* GE  */
-    UPLUS = 277,                   /* UPLUS  */
-    UMINUS = 278                   /* UMINUS  */
+    LOWER_THAN_ELSE = 277,         /* LOWER_THAN_ELSE  */
+    UPLUS = 278,                   /* UPLUS  */
+    UMINUS = 279                   /* UMINUS  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -98,7 +99,7 @@ union YYSTYPE
   float float_val;       // 浮点常量
   BaseAST *ast_val;      // AST 结点
 
-#line 102 "src/sysy.tab.hpp"
+#line 103 "src/sysy.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
