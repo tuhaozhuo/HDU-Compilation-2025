@@ -66,7 +66,7 @@ Lab 4: 编译器开发与实现
 │   ├── exe           # 可执行文件
 │   ├── makefile      # 编译脚本
 │   └── src           # 源代码
-└── lab4
+└── lab4-1
     ├── exe           # 可执行文件
     ├── makefile      # 编译脚本
     ├── src           # 源代码
@@ -95,7 +95,7 @@ make  # 编译语法分析器
 
 - lab4
 ```bash
-cd lab4
+cd lab4-1
 make       # 生成 Flex/Bison 文件并编译
 # 或 make only  # 仅编译（若已生成中间文件）
 make test  # 运行测试脚本，遍历 test/ 目录中的用例

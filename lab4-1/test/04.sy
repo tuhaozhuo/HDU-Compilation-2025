@@ -1,0 +1,17 @@
+void printArray(int arr[2][2]) {
+    int i = 0;
+    while (i < 2) {
+        int j = 0;
+        while (j < 2) {
+            arr[i][j] = arr[i][j] + 1;
+            j = j + 1;
+        }
+        i = i + 1;
+    }
+}
+
+int main() {
+    int arr[2][2] = {{1, 2}, {3, 4}};
+    printArray(arr);
+    return arr[1][1];
+}
