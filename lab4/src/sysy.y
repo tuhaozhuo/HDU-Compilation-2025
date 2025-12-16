@@ -1,525 +1,287 @@
-%code requires {
-  #include <memory>
-  #include <string>
-  #include "AST.hpp"
-}
-
+%require "3.0"
 %{
-
-#include <iostream>
-#include <memory>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
-#include "AST.hpp"
+#include <vector>
+#include "AST.h"
 
-// 声明 lexer 函数和错误处理函数
 int yylex();
-void yyerror(std::unique_ptr<BaseAST> &ast, const char *s);
-
-// Flex 提供的当前行号（在 sysy.l 中启用了 %option yylineno）
+void yyerror(const char *s);
 extern int yylineno;
-// 当前触发错误附近的词法单元文本，由 Flex 提供
-extern char *yytext;
+extern FILE *yyin;
+Node *root = nullptr;
 
-using namespace std;
-
+bool has_parse_error = false;
+bool has_lex_error = false;
+// 来自 SymbolTable.cpp 的变量
+extern bool has_semantic_error;
 %}
 
-// 定义 parser 函数和错误处理函数的附加参数：
-// 通过该参数把最终构建好的 AST 根结点传回 main 函数
-%parse-param { std::unique_ptr<BaseAST> &ast }
-
-// 让 Bison 生成更详细的错误信息
-%define parse.error verbose
-
-// yylval 的联合体定义：用于在词法/语法之间传递信息
+%locations
 %union {
-  std::string *str_val;  // 标识符名等
-  int int_val;           // 整型常量
-  float float_val;       // 浮点常量
-  BaseAST *ast_val;      // AST 结点
+    std::string *str;
+    Node        *node;
 }
 
-// ---------- token 声明 ----------
-%token CONST VOID INT FLOAT RETURN IF ELSE WHILE BREAK CONTINUE
-%token <str_val> IDENT
-%token <int_val> INT_CONST
-%token <float_val> FLOAT_CONST
-%token AND OR EQ NE LE GE
+%token <str> INTTK FLOATTK VOIDTK ID INTCON OCTCON HEXCON FLOATCON STRCON
+%token IF ELSE WHILE BREAK CONTINUE RETURN
+%token EQL NEQ LEQ GEQ AND OR
 
-%nonassoc LOWER_THAN_ELSE
-%nonassoc ELSE
+%type <node> CompUnit FuncDef Block BlockItemList BlockItem Decl VarDecl BType VarDef InitVal VarDefList
+%type <node> Stmt Exp LVal PrimaryExp UnaryExp MulExp AddExp RelExp EqExp LAndExp LOrExp
+%type <node> FuncFParams FuncFParam FuncRParams
 
-// ---------- 非终结符类型 ----------
-%type <ast_val> CompUnit
-%type <ast_val> CompUnitItems CompUnitItem
-%type <ast_val> Decl ConstDecl VarDecl
-%type <ast_val> FuncDef
-%type <ast_val> Block BlockItems BlockItemsOpt BlockItem
-%type <ast_val> Stmt
-%type <ast_val> Exp Cond
-%type <ast_val> LOrExp LAndExp EqExp RelExp AddExp MulExp UnaryExp PrimaryExp
-%type <ast_val> Number
-%type <ast_val> LVal
-%type <ast_val> FuncRParams FuncRParamsOpt
-
-// ---------- 运算符优先级与结合性 ----------
-%left OR
-%left AND
-%left EQ NE
-%left '<' '>' LE GE
-%left '+' '-'
-%left '*' '/' '%'
-%right '!' UPLUS UMINUS
+%precedence LOWER_THAN_ELSE
+%precedence ELSE
 
 %%
+CompUnit : CompUnit FuncDef { $$=$1; $$->child.push_back($2); }
+         | CompUnit Decl    { $$=$1; $$->child.push_back($2); }
+         | FuncDef          { root = new Node("CompUnit", @1.first_line); root->child.push_back($1); $$=root; }
+         | Decl             { root = new Node("CompUnit", @1.first_line); root->child.push_back($1); $$=root; }
+         ;
 
-// =================== 编译单元 ===================
-// 支持多个函数定义和全局变量 / 常量声明。
-CompUnit
-  : CompUnitItems {
-      ast = std::unique_ptr<BaseAST>($1);
-    }
-  ;
+Decl     : VarDecl { $$=$1; } ;
 
-CompUnitItems
-  : CompUnitItem {
-      auto node = new NodeAST("CompUnit");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      $$ = node;
-    }
-  | CompUnitItems CompUnitItem {
-      auto node = static_cast<NodeAST *>($1);
-      node->Add(std::unique_ptr<BaseAST>($2));
-      $$ = node;
-    }
-  ;
+VarDecl  : BType VarDefList ';' {
+             $$ = new Node("VarDecl", @1.first_line);
+             $$->child.push_back($1);
+             for(auto c : $2->child) {
+                 $$->child.push_back(c);
+             }
+         }
+         ;
 
-CompUnitItem
-  : Decl   { $$ = $1; }
-  | FuncDef { $$ = $1; }
-  ;
+VarDefList : VarDef {
+                $$ = new Node("VarDefList", @1.first_line);
+                $$->child.push_back($1);
+            }
+            | VarDefList ',' VarDef {
+                $$ = $1;
+                $$->child.push_back($3);
+            }
+            ;
 
-// =================== 声明 ===================
-// BType 仅用于语法约束，此处不单独建 AST 结点。
-BType
-  : INT
-  | FLOAT
-  ;
+BType    : INTTK   { $$ = new Node("BType", @1.first_line); $$->child.push_back(new Node("Type",0,"int")); }
+         | FLOATTK { $$ = new Node("BType", @1.first_line); $$->child.push_back(new Node("Type",0,"float")); }
+         | VOIDTK  { $$ = new Node("BType", @1.first_line); $$->child.push_back(new Node("Type",0,"void")); }
+         ;
 
-Decl
-  : ConstDecl { $$ = $1; }
-  | VarDecl   { $$ = $1; }
-  ;
+VarDef   : ID {
+             $$ = new Node("VarDef", @1.first_line);
+             $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+         }
+         | ID '=' InitVal {
+             $$ = new Node("VarDef", @1.first_line);
+             $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+             $$->child.push_back(new Node("ASSIGN", 0));
+             $$->child.push_back($3);
+         }
+         | ID '[' Exp ']' { // 简化: 仅支持一维数组，多维类似
+             $$ = new Node("VarDef", @1.first_line);
+             $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+             Node* dims = new Node("ArrayDims", @2.first_line);
+             dims->child.push_back($3);
+             $$->child.push_back(dims);
+         }
+         ;
 
-ConstDecl
-  : CONST BType ConstDefList ';' {
-      $$ = new NodeAST("ConstDecl");
-    }
-  ;
+InitVal  : Exp { $$ = new Node("InitVal", @1.first_line); $$->child.push_back($1); } ;
 
-ConstDefList
-  : ConstDef
-  | ConstDefList ',' ConstDef
-  ;
+FuncDef  : BType ID '(' ')' Block {
+             $$ = new Node("FuncDef", @1.first_line);
+             Node* ft = new Node("FuncType", @1.first_line);
+             ft->child.push_back($1->child[0]); // Type
+             $$->child.push_back(ft);
+             $$->child.push_back(new Node("Ident", @2.first_line, *$2));
+             $$->child.push_back($5);
+         }
+         | BType ID '(' FuncFParams ')' Block {
+             $$ = new Node("FuncDef", @1.first_line);
+             Node* ft = new Node("FuncType", @1.first_line);
+             ft->child.push_back($1->child[0]);
+             $$->child.push_back(ft);
+             $$->child.push_back(new Node("Ident", @2.first_line, *$2));
+             $$->child.push_back($4);
+             $$->child.push_back($6);
+         }
+         ;
 
-ConstDef
-  : IDENT ConstArrayDimsOpt '=' ConstInitVal
-  ;
+FuncFParams : FuncFParam { $$ = new Node("FuncFParams", @1.first_line); $$->child.push_back($1); }
+            | FuncFParams ',' FuncFParam { $$=$1; $$->child.push_back($3); }
+            ;
 
-ConstArrayDimsOpt
-  : /* empty */
-  | ConstArrayDimsOpt '[' ConstExp ']'
-  ;
+FuncFParam : BType ID {
+               $$ = new Node("FuncFParam", @1.first_line);
+               $$->child.push_back($1);
+               $$->child.push_back(new Node("Ident", @2.first_line, *$2));
+           }
+           ;
 
-ConstInitVal
-  : Exp
-  | '{' ConstInitValListOpt '}'
-  ;
+Block    : '{' BlockItemList '}' {
+             $$ = new Node("Block", @1.first_line);
+             if($2) $$->child.push_back($2);
+         }
+         ;
 
-ConstInitValListOpt
-  : /* empty */
-  | ConstInitValList
-  ;
+BlockItemList : /* empty */ { $$ = nullptr; }
+              | BlockItemList BlockItem {
+                  if(!$1) $$ = new Node("BlockItemList", @2.first_line);
+                  else $$ = $1;
+                  $$->child.push_back($2);
+              }
+              ;
 
-ConstInitValList
-  : ConstInitVal
-  | ConstInitValList ',' ConstInitVal
-  ;
+BlockItem : Decl { $$=$1; } | Stmt { $$=$1; } ;
 
-ConstExp
-  : Exp
-  ;
+Stmt      : LVal '=' Exp ';' {
+              $$ = new Node("Stmt", @1.first_line);
+              $$->child.push_back($1);
+              $$->child.push_back(new Node("ASSIGN",0));
+              $$->child.push_back($3);
+          }
+          | Exp ';' {
+              $$ = new Node("Stmt", @1.first_line);
+              $$->child.push_back($1); // 可能是函数调用语句
+          }
+          | Exp error ';' {
+              // 错误恢复：遇到错误后插入分号，仍然构建Stmt节点
+              // 这样可以在报告语法错误后继续语义分析
+              $$ = new Node("Stmt", @1.first_line);
+              $$->child.push_back($1);
+          }
+          | Exp error {
+              // 错误恢复：遇到错误时（如缺少分号），仍然构建Stmt节点
+              // 这样可以在报告语法错误后继续语义分析
+              $$ = new Node("Stmt", @1.first_line);
+              $$->child.push_back($1);
+          }
+          | Block { $$=$1; }
+          | RETURN Exp ';' {
+              $$ = new Node("Stmt", @1.first_line);
+              Node* ret = new Node("Return", @1.first_line);
+              ret->child.push_back($2);
+              $$->child.push_back(ret);
+          }
+          | RETURN ';' {
+              $$ = new Node("Stmt", @1.first_line);
+              $$->child.push_back(new Node("Return", @1.first_line));
+          }
+          | IF '(' Exp ')' Stmt %prec LOWER_THAN_ELSE {
+              $$ = new Node("IfStmt", @1.first_line);
+              $$->child.push_back($3); $$->child.push_back($5);
+          }
+          | IF '(' Exp ')' Stmt ELSE Stmt {
+              $$ = new Node("IfStmt", @1.first_line);
+              $$->child.push_back($3); $$->child.push_back($5); $$->child.push_back($7);
+          }
+          | WHILE '(' Exp ')' Stmt {
+              $$ = new Node("WhileStmt", @1.first_line);
+              $$->child.push_back($3); $$->child.push_back($5);
+          }
+          | BREAK ';' { $$ = new Node("BreakStmt", @1.first_line); }
+          | CONTINUE ';' { $$ = new Node("ContinueStmt", @1.first_line); }
+          ;
 
-VarDecl
-  : BType VarDefList ';' {
-      $$ = new NodeAST("VarDecl");
-    }
-  ;
+Exp       : LOrExp { $$=$1; } ;
+LOrExp    : LAndExp { $$=$1; } 
+          | LOrExp OR LAndExp { $$=new Node("LOrExp",@1.first_line); $$->child.push_back($1); $$->child.push_back($3); } ;
+LAndExp   : EqExp { $$=$1; }
+          | LAndExp AND EqExp { $$=new Node("LAndExp",@1.first_line); $$->child.push_back($1); $$->child.push_back($3); } ;
+EqExp     : RelExp { $$=$1; }
+          | EqExp EQL RelExp { $$=new Node("EqExp",@1.first_line,"=="); $$->child.push_back($1); $$->child.push_back($3); }
+          | EqExp NEQ RelExp { $$=new Node("EqExp",@1.first_line,"!="); $$->child.push_back($1); $$->child.push_back($3); } ;
+RelExp    : AddExp { $$=$1; }
+          | RelExp '<' AddExp { $$=new Node("RelExp",@1.first_line,"<"); $$->child.push_back($1); $$->child.push_back($3); }
+          | RelExp '>' AddExp { $$=new Node("RelExp",@1.first_line,">"); $$->child.push_back($1); $$->child.push_back($3); } ;
+AddExp    : MulExp { $$=$1; }
+          | AddExp '+' MulExp { $$=new Node("AddExp",@1.first_line,"+"); $$->child.push_back($1); $$->child.push_back($3); }
+          | AddExp '-' MulExp { $$=new Node("AddExp",@1.first_line,"-"); $$->child.push_back($1); $$->child.push_back($3); } ;
+MulExp    : UnaryExp { $$=$1; }
+          | MulExp '*' UnaryExp { $$=new Node("MulExp",@1.first_line,"*"); $$->child.push_back($1); $$->child.push_back($3); }
+          | MulExp '/' UnaryExp { $$=new Node("MulExp",@1.first_line,"/"); $$->child.push_back($1); $$->child.push_back($3); } ;
 
-VarDefList
-  : VarDef
-  | VarDefList ',' VarDef
-  ;
+UnaryExp  : PrimaryExp { $$=$1; }
+          | ID '(' ')' {
+              $$ = new Node("FuncCall", @1.first_line);
+              $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+          }
+          | ID '(' FuncRParams ')' {
+              $$ = new Node("FuncCall", @1.first_line);
+              $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+              $$->child.push_back($3);
+          }
+          | ID '(' FuncRParams error {
+              // 错误恢复：允许缺少右括号的函数调用
+              $$ = new Node("FuncCall", @1.first_line);
+              $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+              $$->child.push_back($3);
+          }
+          | ID '(' error {
+              // 错误恢复：允许缺少参数和右括号的函数调用
+              $$ = new Node("FuncCall", @1.first_line);
+              $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+          }
+          ;
 
-VarDef
-  : IDENT VarArrayDimsOpt
-  | IDENT VarArrayDimsOpt '=' InitVal
-  ;
+FuncRParams : Exp { $$ = new Node("FuncRParams", @1.first_line); $$->child.push_back($1); }
+            | FuncRParams ',' Exp { $$=$1; $$->child.push_back($3); }
+            ;
 
-VarArrayDimsOpt
-  : /* empty */
-  | VarArrayDimsOpt '[' Exp ']'
-  ;
+PrimaryExp : '(' Exp ')' { $$=$2; }
+           | LVal { $$=$1; }
+           | INTCON { $$ = new Node("Number", @1.first_line); $$->child.push_back(new Node("INTCON",0,*$1)); }
+           | OCTCON { $$ = new Node("Number", @1.first_line); $$->child.push_back(new Node("INTCON",0,*$1)); }
+           | HEXCON { $$ = new Node("Number", @1.first_line); $$->child.push_back(new Node("INTCON",0,*$1)); }
+           | FLOATCON { $$ = new Node("Number", @1.first_line); $$->child.push_back(new Node("FLOATCON",0,*$1)); }
+           ;
 
-InitVal
-  : Exp
-  | '{' InitValListOpt '}'
-  ;
-
-InitValListOpt
-  : /* empty */
-  | InitValList
-  ;
-
-InitValList
-  : InitVal
-  | InitValList ',' InitVal
-  ;
-
-// =================== 函数定义 ===================
-/* 函数返回类型统一用两类：void 和 BType(int/float) */
-
-FuncDef
-  : VOID IDENT '(' FuncFParamsOpt ')' Block {
-      std::string name = *$2;
-      delete $2;
-      auto node = new NodeAST("FuncDef " + name);
-      node->Add(std::unique_ptr<BaseAST>($6)); // Block
-      $$ = node;
-    }
-  | BType IDENT '(' FuncFParamsOpt ')' Block {
-      std::string name = *$2;
-      delete $2;
-      auto node = new NodeAST("FuncDef " + name);
-      node->Add(std::unique_ptr<BaseAST>($6)); // Block
-      $$ = node;
-    }
-  ;
-
-FuncFParamsOpt
-  : /* empty */
-  | FuncFParams
-  ;
-
-FuncFParams
-  : FuncFParam
-  | FuncFParams ',' FuncFParam
-  ;
-
-FuncFParam
-  : BType IDENT {
-      // 标量形参，当前不单独在 AST 中展示
-    }
-  | BType IDENT FuncFParamArrayDims {
-      // 数组形参，同样暂不在 AST 中细化维度信息
-    }
-  ;
-
-FuncFParamArrayDims
-  : '[' Exp ']'
-  | FuncFParamArrayDims '[' Exp ']'
-  ;
-
-// =================== 语句块 ===================
-Block
-  : '{' BlockItemsOpt '}' {
-      auto node = new NodeAST("Block");
-      if ($2) {
-        node->Add(std::unique_ptr<BaseAST>($2));
-      }
-      $$ = node;
-    }
-  ;
-
-BlockItemsOpt
-  : /* empty */ { $$ = nullptr; }
-  | BlockItems  { $$ = $1; }
-  ;
-
-BlockItems
-  : BlockItem {
-      auto list = new NodeAST("BlockItems");
-      list->Add(std::unique_ptr<BaseAST>($1));
-      $$ = list;
-    }
-  | BlockItems BlockItem {
-      auto list = static_cast<NodeAST *>($1);
-      list->Add(std::unique_ptr<BaseAST>($2));
-      $$ = list;
-    }
-  ;
-
-BlockItem
-  : Decl { $$ = $1; }
-  | Stmt { $$ = $1; }
-  ;
-
-// =================== 语句 ===================
-Stmt
-  : LVal '=' Exp ';' {
-      auto node = new NodeAST("Assign");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | Exp ';' {
-      auto node = new NodeAST("ExprStmt");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      $$ = node;
-    }
-  | ';' {
-      $$ = new NodeAST("EmptyStmt");
-    }
-  | Block {
-      $$ = $1;
-    }
-  | IF '(' Cond ')' Stmt %prec LOWER_THAN_ELSE {
-      auto node = new NodeAST("If");
-      node->Add(std::unique_ptr<BaseAST>($3)); // 条件
-      node->Add(std::unique_ptr<BaseAST>($5)); // then
-      $$ = node;
-    }
-  | IF '(' Cond ')' Stmt ELSE Stmt {
-      auto node = new NodeAST("IfElse");
-      node->Add(std::unique_ptr<BaseAST>($3)); // 条件
-      node->Add(std::unique_ptr<BaseAST>($5)); // then
-      node->Add(std::unique_ptr<BaseAST>($7)); // else
-      $$ = node;
-    }
-  | WHILE '(' Cond ')' Stmt {
-      auto node = new NodeAST("While");
-      node->Add(std::unique_ptr<BaseAST>($3)); // 条件
-      node->Add(std::unique_ptr<BaseAST>($5)); // 循环体
-      $$ = node;
-    }
-  | BREAK ';' {
-      $$ = new NodeAST("Break");
-    }
-  | CONTINUE ';' {
-      $$ = new NodeAST("Continue");
-    }
-  | RETURN Exp ';' {
-      auto node = new NodeAST("Return");
-      node->Add(std::unique_ptr<BaseAST>($2));
-      $$ = node;
-    }
-  | RETURN ';' {
-      $$ = new NodeAST("ReturnVoid");
-    }
-  ;
-
-// =================== 左值（变量 / 数组元素） ===================
-LVal
-  : IDENT {
-      std::string name = *$1;
-      delete $1;
-      $$ = new NodeAST("LVal " + name);
-    }
-  | IDENT LValArrayDims {
-      std::string name = *$1;
-      delete $1;
-      // 为简化实现，这里不单独展示每一维的信息
-      $$ = new NodeAST("LValArray " + name);
-    }
-  ;
-
-LValArrayDims
-  : '[' Exp ']'
-  | LValArrayDims '[' Exp ']'
-  ;
-
-// =================== 表达式 ===================
-Exp
-  : LOrExp { $$ = $1; }
-  ;
-
-Cond
-  : LOrExp { $$ = $1; }
-  ;
-
-LOrExp
-  : LAndExp { $$ = $1; }
-  | LOrExp OR LAndExp {
-      auto node = new NodeAST("||");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-LAndExp
-  : EqExp { $$ = $1; }
-  | LAndExp AND EqExp {
-      auto node = new NodeAST("&&");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-EqExp
-  : RelExp { $$ = $1; }
-  | EqExp EQ RelExp {
-      auto node = new NodeAST("==");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | EqExp NE RelExp {
-      auto node = new NodeAST("!=");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-RelExp
-  : AddExp { $$ = $1; }
-  | RelExp '<' AddExp {
-      auto node = new NodeAST("<");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | RelExp '>' AddExp {
-      auto node = new NodeAST(">");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | RelExp LE AddExp {
-      auto node = new NodeAST("<=");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | RelExp GE AddExp {
-      auto node = new NodeAST(">=");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-AddExp
-  : MulExp { $$ = $1; }
-  | AddExp '+' MulExp {
-      auto node = new NodeAST("+");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | AddExp '-' MulExp {
-      auto node = new NodeAST("-");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-MulExp
-  : UnaryExp { $$ = $1; }
-  | MulExp '*' UnaryExp {
-      auto node = new NodeAST("*");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | MulExp '/' UnaryExp {
-      auto node = new NodeAST("/");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  | MulExp '%' UnaryExp {
-      auto node = new NodeAST("%");
-      node->Add(std::unique_ptr<BaseAST>($1));
-      node->Add(std::unique_ptr<BaseAST>($3));
-      $$ = node;
-    }
-  ;
-
-UnaryExp
-  : PrimaryExp { $$ = $1; }
-  | '+' UnaryExp %prec UPLUS {
-      auto node = new NodeAST("unary+");
-      node->Add(std::unique_ptr<BaseAST>($2));
-      $$ = node;
-    }
-  | '-' UnaryExp %prec UMINUS {
-      auto node = new NodeAST("unary-");
-      node->Add(std::unique_ptr<BaseAST>($2));
-      $$ = node;
-    }
-  | '!' UnaryExp {
-      auto node = new NodeAST("!");
-      node->Add(std::unique_ptr<BaseAST>($2));
-      $$ = node;
-    }
-  | IDENT '(' FuncRParamsOpt ')' {
-      std::string name = *$1;
-      delete $1;
-      auto node = new NodeAST("Call " + name);
-      if ($3) {
-        node->Add(std::unique_ptr<BaseAST>($3));
-      }
-      $$ = node;
-    }
-  ;
-
-FuncRParamsOpt
-  : /* empty */ { $$ = nullptr; }
-  | FuncRParams  { $$ = $1; }
-  ;
-
-FuncRParams
-  : Exp {
-      auto list = new NodeAST("Args");
-      list->Add(std::unique_ptr<BaseAST>($1));
-      $$ = list;
-    }
-  | FuncRParams ',' Exp {
-      auto list = static_cast<NodeAST *>($1);
-      list->Add(std::unique_ptr<BaseAST>($3));
-      $$ = list;
-    }
-  ;
-
-PrimaryExp
-  : '(' Exp ')' { $$ = $2; }
-  | LVal        { $$ = $1; }
-  | Number      { $$ = $1; }
-  ;
-
-Number
-  : INT_CONST {
-      auto node = new NodeAST("IntConst(" + std::to_string($1) + ")");
-      $$ = node;
-    }
-  | FLOAT_CONST {
-      auto node = new NodeAST("FloatConst");
-      $$ = node;
-    }
-  ;
-
+LVal      : ID {
+              $$ = new Node("LVal", @1.first_line);
+              $$->child.push_back(new Node("Ident", @1.first_line, *$1));
+          }
+          | LVal '[' Exp ']' {
+              $$ = $1;
+              $$->child.push_back(new Node("Index", @2.first_line)); // 标记下标
+              $$->child.back()->child.push_back($3);
+          }
+          ;
 %%
 
-// =================== 错误处理 ===================
-// 当语法分析出错时，Bison 会调用该函数。
-void yyerror(std::unique_ptr<BaseAST> &ast, const char *s) {
-  std::cerr << "Syntax error at line " << yylineno
-            << " near \"" << (yytext ? yytext : (char*)"<eof>") << "\": "
-            << s << std::endl;
+void yyerror(const char *s){
+    has_parse_error = true;
+    printf("[Syntax] Error at Line %d: %s.\n", yylineno, s);
 }
 
+void Node::print(int dep){
+    for(int i=0;i<dep;i++) putchar(' ');
+    printf("%s",name.c_str());
+    if(line) printf(" (%d)",line);
+    if(!attr.empty()) printf(": %s",attr.c_str());
+    putchar('\n');
+    for(auto c:child) if(c) c->print(dep+2);
+}
 
+int main(int argc,char **argv){
+    if(argc<2){fprintf(stderr,"Usage: %s <file.sy>\n",argv[0]); return 1;}
+    FILE *f=fopen(argv[1],"r");
+    if(!f){perror(argv[1]); return 1;}
+    yyin=f;
+    yyparse();
+    
+
+    if (!root) {
+        return 404;
+    }
+    if (!has_lex_error) {
+        // 进行语义分析
+        semantic_analysis(root);
+        if(!has_semantic_error) {
+            root->print();
+            return 0;
+        }
+        return 2;
+    }
+    return 1;
+}

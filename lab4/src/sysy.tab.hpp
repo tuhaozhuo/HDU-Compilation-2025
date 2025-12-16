@@ -44,14 +44,6 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
-/* "%code requires" blocks.  */
-#line 1 "src/sysy.y"
-
-  #include <memory>
-  #include <string>
-  #include "AST.hpp"
-
-#line 55 "src/sysy.tab.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -62,28 +54,28 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    CONST = 258,                   /* CONST  */
-    VOID = 259,                    /* VOID  */
-    INT = 260,                     /* INT  */
-    FLOAT = 261,                   /* FLOAT  */
-    RETURN = 262,                  /* RETURN  */
-    IF = 263,                      /* IF  */
-    ELSE = 264,                    /* ELSE  */
-    WHILE = 265,                   /* WHILE  */
-    BREAK = 266,                   /* BREAK  */
-    CONTINUE = 267,                /* CONTINUE  */
-    IDENT = 268,                   /* IDENT  */
-    INT_CONST = 269,               /* INT_CONST  */
-    FLOAT_CONST = 270,             /* FLOAT_CONST  */
-    AND = 271,                     /* AND  */
-    OR = 272,                      /* OR  */
-    EQ = 273,                      /* EQ  */
-    NE = 274,                      /* NE  */
-    LE = 275,                      /* LE  */
-    GE = 276,                      /* GE  */
-    LOWER_THAN_ELSE = 277,         /* LOWER_THAN_ELSE  */
-    UPLUS = 278,                   /* UPLUS  */
-    UMINUS = 279                   /* UMINUS  */
+    INTTK = 258,                   /* INTTK  */
+    FLOATTK = 259,                 /* FLOATTK  */
+    VOIDTK = 260,                  /* VOIDTK  */
+    ID = 261,                      /* ID  */
+    INTCON = 262,                  /* INTCON  */
+    OCTCON = 263,                  /* OCTCON  */
+    HEXCON = 264,                  /* HEXCON  */
+    FLOATCON = 265,                /* FLOATCON  */
+    STRCON = 266,                  /* STRCON  */
+    IF = 267,                      /* IF  */
+    ELSE = 268,                    /* ELSE  */
+    WHILE = 269,                   /* WHILE  */
+    BREAK = 270,                   /* BREAK  */
+    CONTINUE = 271,                /* CONTINUE  */
+    RETURN = 272,                  /* RETURN  */
+    EQL = 273,                     /* EQL  */
+    NEQ = 274,                     /* NEQ  */
+    LEQ = 275,                     /* LEQ  */
+    GEQ = 276,                     /* GEQ  */
+    AND = 277,                     /* AND  */
+    OR = 278,                      /* OR  */
+    LOWER_THAN_ELSE = 279          /* LOWER_THAN_ELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -92,14 +84,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 35 "src/sysy.y"
+#line 22 "src/sysy.y"
 
-  std::string *str_val;  // 标识符名等
-  int int_val;           // 整型常量
-  float float_val;       // 浮点常量
-  BaseAST *ast_val;      // AST 结点
+    std::string *str;
+    Node        *node;
 
-#line 103 "src/sysy.tab.hpp"
+#line 93 "src/sysy.tab.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -107,11 +97,25 @@ typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+/* Location type.  */
+#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+typedef struct YYLTYPE YYLTYPE;
+struct YYLTYPE
+{
+  int first_line;
+  int first_column;
+  int last_line;
+  int last_column;
+};
+# define YYLTYPE_IS_DECLARED 1
+# define YYLTYPE_IS_TRIVIAL 1
+#endif
+
 
 extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 
-
-int yyparse (std::unique_ptr<BaseAST> &ast);
+int yyparse (void);
 
 
 #endif /* !YY_YY_SRC_SYSY_TAB_HPP_INCLUDED  */

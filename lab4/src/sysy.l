@@ -1,116 +1,82 @@
-%option noyywrap
-%option nounput
-%option noinput
-%option yylineno
-
 %{
-
+#include <cstdio>
 #include <cstdlib>
 #include <string>
-
+#include <cctype>
+#include "AST.h"
 #include "sysy.tab.hpp"
+extern int yylineno;
+extern Node *root;
+extern YYLTYPE yylloc;
+extern bool has_lex_error;
 
-using namespace std;
+#define YY_USER_ACTION \
+    do { yylloc.first_line = yylineno; \
+         yylloc.last_line = yylineno; } while(0);
 
+static std::string to_decimal(const char *text, int base){
+    long long val = strtoll(text, nullptr, base);
+    return std::to_string(val);
+}
+static void report_lex_error(const char *msg, const char *lexeme){
+    printf("[Lexical] Error at Line %d: %s \"%s\"\n", yylineno, msg, lexeme);
+    has_lex_error = true;
+}
 %}
 
-/* --------- 模式定义（Definitions） --------- */
-
-WhiteSpace      [ \t\r\n]+
-LineComment     "//".*
-
-Identifier      [a-zA-Z_][a-zA-Z0-9_]*
-
-Decimal         [1-9][0-9]*
-Octal           0[0-7]*
-Hexadecimal     0[xX][0-9a-fA-F]+
-
-Float1          [0-9]+\.[0-9]*([eE][+-]?[0-9]+)?
-Float2          \.[0-9]+([eE][+-]?[0-9]+)?
-Float3          [0-9]+([eE][+-]?[0-9]+)
+%option noyywrap yylineno
 
 %%
+[ \t\r]+                 { /* 忽略空白 */ }
+\n                       { /* 行号自动增加 */ }
 
- 
-{WhiteSpace}      { /* skip */ }
-{LineComment}     { /* skip */ }
+"int"                    { yylval.str = new std::string("int"); return INTTK; }
+"float"                  { yylval.str = new std::string("float"); return FLOATTK; }
+"void"                   { yylval.str = new std::string("void"); return VOIDTK; }
+"if"                     { return IF; }
+"else"                   { return ELSE; }
+"while"                  { return WHILE; }
+"break"                  { return BREAK; }
+"continue"               { return CONTINUE; }
+"return"                 { return RETURN; }
 
- 
-"const"           { return CONST; }
-"int"             { return INT; }
-"void"            { return VOID; }
-"float"           { return FLOAT; }
-"if"              { return IF; }
-"else"            { return ELSE; }
-"while"           { return WHILE; }
-"break"           { return BREAK; }
-"continue"        { return CONTINUE; }
-"return"          { return RETURN; }
+0[0-7]+                  { yylval.str = new std::string(to_decimal(yytext,8)); return OCTCON; }
+0[xX][0-9a-fA-F]+        { yylval.str = new std::string(to_decimal(yytext,16)); return HEXCON; }
+[1-9][0-9]*              { yylval.str = new std::string(yytext); return INTCON; }
+0                        { yylval.str = new std::string("0"); return INTCON; }
+[0-9]+\.[0-9]+           { yylval.str = new std::string(yytext); return FLOATCON; }
+[0-9]+\.[0-9]*           { yylval.str = new std::string(yytext); return FLOATCON; }
+[0-9]*\.[0-9]+           { yylval.str = new std::string(yytext); return FLOATCON; }
 
- 
-{Identifier}      {
-                     yylval.str_val = new string(yytext);
-                     return IDENT;
-                   }
+[a-zA-Z_][a-zA-Z0-9_]* { yylval.str = new std::string(yytext); return ID; }
 
- 
-{Float1}          {
-                     yylval.float_val = strtof(yytext, nullptr);
-                     return FLOAT_CONST;
-                   }
-{Float2}          {
-                     yylval.float_val = strtof(yytext, nullptr);
-                     return FLOAT_CONST;
-                   }
-{Float3}          {
-                     yylval.float_val = strtof(yytext, nullptr);
-                     return FLOAT_CONST;
-                   }
+\"(\\.|[^\\"])*\"        { yylval.str = new std::string(yytext); return STRCON; }
 
- 
-{Hexadecimal}     {
-                     yylval.int_val = strtol(yytext, nullptr, 0);
-                     return INT_CONST;
-                   }
-{Octal}           {
-                     yylval.int_val = strtol(yytext, nullptr, 0);
-                     return INT_CONST;
-                   }
-{Decimal}         {
-                     yylval.int_val = strtol(yytext, nullptr, 0);
-                     return INT_CONST;
-                   }
+"("      { return '('; }
+")"      { return ')'; }
+"["      { return '['; }
+"]"      { return ']'; }
+"{"      { return '{'; }
+"}"      { return '}'; }
+";"      { return ';'; }
+","      { return ','; }
 
- 
-"&&"              { return AND; }
-"||"              { return OR; }
+"+"      { return '+'; }
+"-"      { return '-'; }
+"*"      { return '*'; }
+"/"      { return '/'; }
+"%"      { return '%'; }
+"="      { return '='; }
+"!"      { return '!'; }
 
- 
-"<="              { return LE; }
-">="              { return GE; }
-"=="              { return EQ; }
-"!="              { return NE; }
-"<"               { return '<'; }
-">"               { return '>'; }
+"=="     { return EQL; }
+"!="     { return NEQ; }
+"<"      { return '<'; }
+">"      { return '>'; }
+"<="     { return LEQ; }
+">="     { return GEQ; }
+"&&"     { return AND; }
+"||"     { return OR; }
 
- 
-"+"               { return '+'; }
-"-"               { return '-'; }
-"*"               { return '*'; }
-"/"               { return '/'; }
-"%"               { return '%'; }
-"="               { return '='; }
-"!"               { return '!'; }
-";"               { return ';'; }
-","               { return ','; }
-"("               { return '('; }
-")"               { return ')'; }
-"{"               { return '{'; }
-"}"               { return '}'; }
-"["               { return '['; }
-"]"               { return ']'; }
-
- 
-.                 { return yytext[0]; }
-
+.        { report_lex_error("Invalid character", yytext); return 0; }
 %%

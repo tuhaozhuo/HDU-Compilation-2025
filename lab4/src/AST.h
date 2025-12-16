@@ -19,5 +19,4 @@ struct Node {
     void print(int dep = 0);
 };
 
-// 语义分析入口函数 [cite: 27, 28]
 void semantic_analysis(Node* root);

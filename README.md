@@ -95,7 +95,7 @@ make  # 编译语法分析器
 
 - lab4
 ```bash
-cd lab4-1
+cd lab4s
 make       # 生成 Flex/Bison 文件并编译
 # 或 make only  # 仅编译（若已生成中间文件）
 make test  # 运行测试脚本，遍历 test/ 目录中的用例

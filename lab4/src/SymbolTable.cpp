@@ -16,7 +16,7 @@ struct Symbol {
     string kind; // "var", "func", "array"
     string type; // "int", "float", "void"
     bool isArray = false;
-    int paramCount = 0; // 函数参数个数
+    int paramCount = 0;
     int definedLine;
     vector<string> paramTypes;
 };
@@ -81,7 +81,7 @@ static const ErrorTemplate errorTable[] = {
     {"[Semantic]Error at Line %d: misused function \"%s\" as variable.\n", true}, // 6
     {"[Semantic]Error at Line %d: array index is not an integer.\n", false},      // 7
     {"[Semantic]Error at Line %d: \"%s\" is not an array.\n", true},              // 8
-    {"[Semantic]Error at Line %d: %s\n", true},                                   // 9，自带完整句子
+    {"[Semantic]Error at Line %d: %s\n", true},                                   // 9
     {"[Semantic]Error at Line %d: return type mismatch.\n", false},               // 10
     {"[Semantic]Error at Line %d: type mismatched for operands.\n", false},       // 11
     {"[Semantic]Error at Line %d: break statement outside of loop.\n", false},    // 12
